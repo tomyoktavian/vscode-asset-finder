@@ -1,0 +1,17 @@
+.vscode/**
+.vscode-test/**
+out/test/**
+src/**
+webview-ui/**
+!webview-ui/dist/**
+node_modules/**
+.agent/**
+.gitignore
+.eslintrc.json
+tsconfig.json
+vsc-extension-quickstart.md
+package-lock.json
+**/tsconfig.json
+**/*.map
+**/*.ts
+**/*.vsix

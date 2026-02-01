@@ -1,0 +1,32 @@
+# Node.js
+node_modules/
+
+# Compilation outputs
+out/
+dist/
+
+# VS Code Extension artifacts
+*.vsix
+.vscode-test/
+
+# Webview build artifacts
+webview-ui/node_modules/
+webview-ui/dist/
+
+# IDE / Editor
+.agent/
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/extensions.json
+.vscode-test/
+.history/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+.cache/
+.npm/

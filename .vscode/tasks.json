@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: compile",
+      "type": "npm",
+      "script": "compile",
+      "problemMatcher": ["$tsc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "npm: compile-ui",
+      "type": "npm",
+      "script": "compile-ui",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "build: all",
+      "dependsOn": ["npm: compile", "npm: compile-ui"],
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
+}

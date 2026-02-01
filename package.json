@@ -1,0 +1,93 @@
+{
+  "name": "asset-finder",
+  "displayName": "Asset Finder",
+  "description": "Visual gallery of images, audio, video, and documents in your workspace",
+  "publisher": "tomyoktavian",
+  "icon": "resources/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomyoktavian/vscode-asset-finder"
+  },
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "asset-finder-explorer",
+          "title": "Asset Finder",
+          "icon": "resources/asset-finder.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "asset-finder-panel",
+          "title": "Asset Finder",
+          "icon": "resources/asset-finder.svg"
+        }
+      ]
+    },
+    "views": {
+      "asset-finder-explorer": [
+        {
+          "type": "webview",
+          "id": "asset-finder-sidebar-trigger",
+          "name": "Assets",
+          "icon": "resources/asset-finder.svg",
+          "visibility": "visible"
+        }
+      ],
+      "asset-finder-panel": [
+        {
+          "type": "webview",
+          "id": "asset-finder-sidebar",
+          "name": "Assets",
+          "icon": "resources/asset-finder.svg",
+          "visibility": "visible"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "asset-finder.refresh",
+        "title": "Refresh Assets",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "asset-finder.focus",
+        "title": "Open Asset Finder"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "setup": "npm install && cd webview-ui && npm install",
+    "build:ui": "cd webview-ui && npm run build",
+    "watch-ui": "cd webview-ui && npm run dev",
+    "build": "npm run build:ui && npm run compile",
+    "package": "npm run build && vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "@types/vscode": "^1.104.0",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "@vscode/vsce": "^3.7.1",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3"
+  }
+}
