@@ -15,7 +15,6 @@ export class SvgHoverProvider implements vscode.HoverProvider {
     const text = document.getText();
     const offset = document.offsetAt(position);
 
-    // 1. Check for SVG Tags
     SVG_TAG_REGEX.lastIndex = 0;
     let match;
     while ((match = SVG_TAG_REGEX.exec(text)) !== null) {
@@ -64,7 +63,6 @@ export class SvgHoverProvider implements vscode.HoverProvider {
       }
     }
 
-    // 2. Check for Image Paths
     IMAGE_PATH_REGEX.lastIndex = 0;
     let pathMatch;
     while ((pathMatch = IMAGE_PATH_REGEX.exec(text)) !== null) {

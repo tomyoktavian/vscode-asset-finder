@@ -28,7 +28,6 @@ export class SvgDecorator {
     const text = editor.document.getText();
     const decorations: vscode.DecorationOptions[] = [];
 
-    // 1. Handle SVG Tags (Icon only)
     SVG_TAG_REGEX.lastIndex = 0;
     let match;
     while ((match = SVG_TAG_REGEX.exec(text)) !== null) {
@@ -48,7 +47,6 @@ export class SvgDecorator {
       });
     }
 
-    // 2. Handle Image Paths (Icon + Size)
     IMAGE_PATH_REGEX.lastIndex = 0;
     let pathMatch;
     while ((pathMatch = IMAGE_PATH_REGEX.exec(text)) !== null) {
@@ -91,8 +89,6 @@ export class SvgDecorator {
             ext === "jpg" || ext === "jpeg" ? "image/jpeg" : `image/${ext}`;
         }
 
-        // Combine icon and text into one SVG to ensure both are visible
-        // Approx width: 14 (icon) + 4 (gap) + (char count * 6)
         const textDisplay = fileSizeStr ? ` (${fileSizeStr})` : "";
         const estimatedWidth = 14 + textDisplay.length * 7;
 

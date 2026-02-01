@@ -7,14 +7,12 @@ export class PathResolver {
     importPath: string,
     document: vscode.TextDocument,
   ): string | undefined {
-    // 1. Try relative to current document
     const docDir = path.dirname(document.uri.fsPath);
     const relativePath = path.resolve(docDir, importPath);
     if (fs.existsSync(relativePath) && fs.lstatSync(relativePath).isFile()) {
       return relativePath;
     }
 
-    // 2. Try relative to workspace root(s)
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders) {
       for (const folder of workspaceFolders) {
@@ -29,11 +27,9 @@ export class PathResolver {
           return workspacePath;
         }
 
-        // 3. Try common aliases (e.g. @/ or ~/)
         if (importPath.startsWith("@/") || importPath.startsWith("~/")) {
           const subPath = importPath.substring(2);
 
-          // Strategy A: Nearest 'src' directory
           let currentDir = docDir;
           while (currentDir.startsWith(folder.uri.fsPath)) {
             const potentialSrc = path.join(currentDir, "src");
@@ -54,7 +50,6 @@ export class PathResolver {
             currentDir = parent;
           }
 
-          // Strategy B: Root of the current project (where package.json or src exists)
           let projectRoot = docDir;
           while (projectRoot.startsWith(folder.uri.fsPath)) {
             const checkPath = path.resolve(projectRoot, subPath);
@@ -66,7 +61,6 @@ export class PathResolver {
             projectRoot = parent;
           }
 
-          // Strategy C: Absolute relative to workspace root
           const workspaceRootPath = path.resolve(folder.uri.fsPath, subPath);
           if (
             fs.existsSync(workspaceRootPath) &&

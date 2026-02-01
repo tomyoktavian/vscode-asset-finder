@@ -61,10 +61,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           const uri = vscode.Uri.file(path);
 
           if (type === "file") {
-            // For physical files (PNG, JPG, etc.), use the default VS Code opener (image viewer)
             await vscode.commands.executeCommand("vscode.open", uri);
           } else {
-            // For inline SVGs, use openTextDocument to support selection
             const doc = await vscode.workspace.openTextDocument(uri);
             const editor = await vscode.window.showTextDocument(doc);
 
@@ -115,7 +113,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     const includeQuery = this._formatGlob(include, defaultInclude);
 
-    // Combine user exclude with default exclude
     const userExcludeArr = exclude
       ? exclude
           .split(",")
@@ -138,7 +135,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         const relativePath = this._getRelativePath(uri);
         const ext = uri.path.split(".").pop()?.toLowerCase() || "";
 
-        // Define actual asset extensions (excluding code files that might have been matched by a broad INC pattern)
         const assetExtensions = [
           "png",
           "jpg",
@@ -197,7 +193,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     const includeQuery = this._formatGlob(include, defaultInclude);
 
-    // Combine user exclude with default exclude
     const userExcludeArr = exclude
       ? exclude
           .split(",")
@@ -256,28 +251,20 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   }
 
   private _cleanSvg(svg: string): string {
-    return (
-      svg
-        // Replace className with class
-        .replace(/className=/g, "class=")
-        // Replace camelCase attributes with kebab-case (JSX -> HTML)
-        .replace(/strokeWidth=/g, "stroke-width=")
-        .replace(/strokeLinecap=/g, "stroke-linecap=")
-        .replace(/strokeLinejoin=/g, "stroke-linejoin=")
-        .replace(/fillRule=/g, "fill-rule=")
-        .replace(/clipRule=/g, "clip-rule=")
-        // Replace curly brace values with quotes (e.g., strokeWidth={2} -> stroke-width="2")
-        .replace(/={([\s\S]*?)}/g, '="$1"')
-        // Remove width and height to allow flex-box sizing
-        .replace(/\s(width|height)=".*?"/g, "")
-        // Ensure color is visible if it uses currentColor (use VS Code theme var)
-        .replace(/currentColor/g, "var(--foreground)")
-    );
+    return svg
+      .replace(/className=/g, "class=")
+      .replace(/strokeWidth=/g, "stroke-width=")
+      .replace(/strokeLinecap=/g, "stroke-linecap=")
+      .replace(/strokeLinejoin=/g, "stroke-linejoin=")
+      .replace(/fillRule=/g, "fill-rule=")
+      .replace(/clipRule=/g, "clip-rule=")
+      .replace(/={([\s\S]*?)}/g, '="$1"')
+      .replace(/\s(width|height)=".*?"/g, "")
+      .replace(/currentColor/g, "var(--foreground)");
   }
 
   private _getRelativePath(uri: vscode.Uri): string {
     let relativePath = vscode.workspace.asRelativePath(uri, false);
-    // If it's still absolute, manually strip workspace folder
     if (
       relativePath.startsWith("/") ||
       relativePath.includes(":/") ||
@@ -316,23 +303,18 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   private _formatSingleGlob(pattern: string): string {
     if (!pattern || pattern.trim() === "") return "";
 
-    // Handle *.extension -> **/*.extension
     if (pattern.startsWith("*.")) {
       return `**/${pattern}`;
     }
 
-    // If it already uses complex glob wildcards, leave it alone
     if (pattern.includes("**") || pattern.includes("?")) return pattern;
 
-    // Clean up: remove leading/trailing slashes
     let clean = pattern.trim().replace(/^\/|\/$/g, "");
 
-    // If it's a specific file (contains a dot and doesn't look like a hidden folder)
     if (clean.includes(".") && !clean.startsWith(".")) {
       return `**/${clean}`;
     }
 
-    // Otherwise assume it's a folder/path segment and treat as both the folder its content
     return `**/${clean}/**`;
   }
 
