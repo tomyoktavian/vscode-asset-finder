@@ -251,16 +251,23 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   }
 
   private _cleanSvg(svg: string): string {
-    return svg
-      .replace(/className=/g, "class=")
-      .replace(/strokeWidth=/g, "stroke-width=")
-      .replace(/strokeLinecap=/g, "stroke-linecap=")
-      .replace(/strokeLinejoin=/g, "stroke-linejoin=")
-      .replace(/fillRule=/g, "fill-rule=")
-      .replace(/clipRule=/g, "clip-rule=")
-      .replace(/={([\s\S]*?)}/g, '="$1"')
-      .replace(/\s(width|height)=".*?"/g, "")
-      .replace(/currentColor/g, "var(--foreground)");
+    return (
+      svg
+        .replace(/className=/g, "class=")
+        .replace(/strokeWidth=/g, "stroke-width=")
+        .replace(/strokeLinecap=/g, "stroke-linecap=")
+        .replace(/strokeLinejoin=/g, "stroke-linejoin=")
+        .replace(/fillRule=/g, "fill-rule=")
+        .replace(/clipRule=/g, "clip-rule=")
+        // Handle React/JSX props and expressions
+        .replace(/={([\s\S]*?)}/g, '="$1"')
+        .replace(/\{[\s\S]*?\}/g, "")
+        // Handle Kotlin/Dart variables ($var, ${var})
+        .replace(/\$[a-zA-Z0-9_]+/g, "")
+        .replace(/\$\{[\s\S]*?\}/g, "")
+        .replace(/\s(width|height)=".*?"/g, "")
+        .replace(/currentColor/g, "var(--foreground)")
+    );
   }
 
   private _getRelativePath(uri: vscode.Uri): string {

@@ -138,8 +138,12 @@ export class SvgHoverProvider implements vscode.HoverProvider {
       .replace(/strokeLinejoin=/g, "stroke-linejoin=")
       .replace(/fillRule=/g, "fill-rule=")
       .replace(/clipRule=/g, "clip-rule=")
+      // Handle framework specific syntax (React, Kotlin, Dart)
       .replace(/={([\s\S]*?)}/g, '="$1"')
-      .replace(/currentColor/g, "#888888");
+      .replace(/\{[\s\S]*?\}/g, "")
+      .replace(/\$[a-zA-Z0-9_]+/g, "")
+      .replace(/\$\{[\s\S]*?\}/g, "")
+      .replace(/currentColor/gi, "#888888");
 
     if (!processed.includes("http://www.w3.org/2000/svg")) {
       processed = processed.replace(
