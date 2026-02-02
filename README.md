@@ -2,7 +2,7 @@
 
 Asset Finder adalah ekstensi VS Code yang berfungsi untuk menampilkan berbagai aset proyek seperti gambar, audio, video, dan dokumen secara visual di dalam workspace. Ekstensi ini dapat memindai file aset fisik maupun kode SVG yang tertanam langsung di dalam file sumber.
 
-![Asset Finder Preview](https://raw.githubusercontent.com/tomyoktavian/vscode-asset-finder/main/resources/preview-dummy.gif)
+![Asset Finder Preview](https://github.com/tomyoktavian/vscode-asset-finder/raw/master/webview-ui/src/assets/preview.gif)
 
 ## Fitur Utama
 
