@@ -2,9 +2,9 @@
 
 All notable updates to the **Asset Finder** extension will be documented in this file.
 
-## [0.0.3] - 2026-02-02
+## [0.1.2] - 2026-02-03
 
-### Added
+### Major Update
 
 - **Smart Error Handling**: Automatically hides broken or unreadable image files from the gallery to ensure a clean visual experience.
 - **Smart Default Exclusions**: Automatically excludes common build/output folders from scanning (dist, build, .next, .nuxt, android, ios, macos, linux, windows, .dart_tool, .gradle, target, bin, obj) for faster performance and cleaner results.
