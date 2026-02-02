@@ -1,26 +1,24 @@
 # Changelog
 
-Semua perubahan penting pada ekstensi **Asset Finder** akan didokumentasikan di file ini.
+All notable changes to the **Asset Finder** extension will be documented in this file.
 
 ## [0.0.1] - 2026-02-01
 
 ### Added
 
-- Inisialisasi proyek Asset Finder (sebelumnya Gallery Project).
-
-* **Smart Hover Preview**: Preview gambar instan saat kursor diarahkan ke path file atau kode SVG dengan layout dua kolom.
-* **Image Decorator**: Ikon indikator di gutter editor untuk baris yang berisi aset gambar.
-* **Smart Redirect**: Klik ikon di Activity Bar langsung membuka panel galeri bawah.
-* **Filter Multifaset**: Filter aset berdasarkan format, folder, dan file sumber.
-* **Dukungan Multi-Aset**: Mendukung penampilan file Audio, Video, PDF, Excel (XLSX, XLS, CSV), Word (DOCX, DOC), dan Arsip (ZIP, RAR).
-* **Audio Player Terintegrasi**: Memungkinkan pemutaran file audio langsung dari galeri dengan indikator visual.
-* **Visual Grid**: Tampilan galeri dengan ukuran grid yang dapat disesuaikan.
-
-- Deteksi inline SVG untuk berbagai bahasa pemrograman (Kotlin, Python, Dart, React, dll).
-- Fitur pencarian aset secara real-time.
-- Perintah `asset-finder.focus` dan `asset-finder.refresh`.
+- Project initialization for Asset Finder (formerly Gallery Project).
+- **Smart Hover Preview**: Instant image preview when hovering over file paths or SVG code with a two-column layout.
+- **Image Decorator**: Indicator icons in the editor gutter for lines containing image assets.
+- **Smart Redirect**: Clicking the Activity Bar icon directly opens the bottom gallery panel.
+- **Multifaceted Filter**: Filter assets by format, folder, and source file.
+- **Multi-Asset Support**: Supports displaying Audio, Video, PDF, Excel (XLSX, XLS, CSV), Word (DOCX, DOC), and Archive (ZIP, RAR) files.
+- **Integrated Audio Player**: Allows playing audio files directly from the gallery with a visual indicator.
+- **Visual Grid**: Gallery view with adjustable grid sizes.
+- Inline SVG detection for various programming languages (Kotlin, Python, Dart, React, etc.).
+- Real-time asset search feature.
+- Commands `asset-finder.focus` and `asset-finder.refresh`.
 
 ### Changed
 
-- Pembaruan skema warna UI.
-- Optimasi performa pemindaian aset di workspace.
+- Updated UI color scheme.
+- Optimized performance for asset scanning in the workspace.
