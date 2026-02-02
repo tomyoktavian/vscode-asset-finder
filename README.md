@@ -1,8 +1,9 @@
 # Asset Finder 🎨
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/tomyoktavian.asset-finder?style=for-the-badge&logo=visual-studio-code&color=blue)](https://marketplace.visualstudio.com/items?itemName=tomyoktavian.asset-finder)
+[![Open VSX](https://img.shields.io/open-vsx/v/tomyoktavian/asset-finder?style=for-the-badge&logo=openvsx&color=purple)](https://open-vsx.org/extension/tomyoktavian/asset-finder)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/tomyoktavian.asset-finder?style=for-the-badge&logo=visual-studio-code&color=success)](https://marketplace.visualstudio.com/items?itemName=tomyoktavian.asset-finder)
-[![License](https://img.shields.io/github/license/tomyoktavian/asset-finder?style=for-the-badge)](https://github.com/tomyoktavian/asset-finder/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/tomyoktavian/vscode-asset-finder?style=for-the-badge)](https://github.com/tomyoktavian/vscode-asset-finder/blob/main/LICENSE)
 
 Asset Finder is a powerful VS Code extension designed to visually manage and explore project assets—including images, audio, video, and documents—directly within your workspace. It intelligently scans both local files and SVG code snippets embedded within your source code.
 
