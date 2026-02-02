@@ -2,6 +2,32 @@
 
 All notable updates to the **Asset Finder** extension will be documented in this file.
 
+## [0.0.3] - 2026-02-02
+
+### Added
+
+- **Smart Error Handling**: Automatically hides broken or unreadable image files from the gallery to ensure a clean visual experience.
+- **Smart Default Exclusions**: Automatically excludes common build/output folders from scanning (dist, build, .next, .nuxt, android, ios, macos, linux, windows, .dart_tool, .gradle, target, bin, obj) for faster performance and cleaner results.
+- **Theme-Aware SVG Colors**: SVG previews and decorators now automatically adapt to VS Code theme - white for dark themes, black for light themes.
+- **Full SVG Copy Options**: Added comprehensive copy options for SVG (inline & file): Copy Path, SVG Code, Paste-ready JSX, React Component, Vue Component, Android Vector XML, XAML Path, and Data URI.
+
+### Fixed
+
+- **Folder Filtering**: Fixed an issue where images were missing after selecting a folder in the filter dropdown.
+- **Hierarchical Path Support**: Improved relative path matching to support nested directory structures accurately.
+- **SVG Detection in TSX/JSX**: Fixed critical regex bug that incorrectly matched TypeScript type annotations (e.g., `<SVGSVGElement>`) as SVG tags, causing inline SVG rendering to fail in decorator and hover preview.
+- **SVG Element Preservation**: Fixed bug where `width` and `height` attributes were removed from all SVG child elements (rect, circle, path, etc.), not just the opening `<svg>` tag.
+- **Critical: Infinite Loading on Manual Exclude**: Fixed nested braces bug that caused manual exclude patterns to create invalid glob queries, resulting in `findFiles` hanging indefinitely.
+
+### Refactored
+
+- **Code Quality**: Extracted ~170 lines of duplicate code into reusable utilities:
+  - `SvgProcessor` - SVG processing logic with configurable dimensions
+  - `FileUtils` - File size formatting
+  - `GlobPatterns` - Glob pattern formatting and default excludes
+  - `RegexPatterns` - Shared regex constants
+- Improved maintainability and consistency across `SvgDecorator`, `SvgHoverProvider`, and `SidebarProvider`
+
 ## [0.0.1] - 2026-02-01
 
 ### Added

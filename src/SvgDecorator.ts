@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 import { PathResolver } from "./utilities/PathResolver.js";
+import { SvgProcessor } from "./utilities/SvgProcessor.js";
+import { FileUtils } from "./utilities/FileUtils.js";
+import { ThemeUtils } from "./utilities/ThemeUtils.js";
+import { IMAGE_PATH_REGEX, SVG_TAG_REGEX } from "./utilities/RegexPatterns.js";
 import * as fs from "fs";
 import * as path from "path";
-
-const IMAGE_PATH_REGEX =
-  /(['"`])((?:[a-zA-Z]:)?[^'"\n\r]*?\.(?:png|jpg|jpeg|gif|svg|webp))\1/gi;
-const SVG_TAG_REGEX = /<svg[\s\S]*?<\/svg>/gi;
 
 export class SvgDecorator {
   private _decorationType: vscode.TextEditorDecorationType;
@@ -33,7 +33,11 @@ export class SvgDecorator {
     while ((match = SVG_TAG_REGEX.exec(text)) !== null) {
       const startPos = editor.document.positionAt(match.index);
       const rawSvg = match[0];
-      const processedSvg = this._processSvg(rawSvg);
+      const processedSvg = SvgProcessor.process(rawSvg, {
+        width: 16,
+        height: 16,
+        colorReplacement: ThemeUtils.getSvgColor(),
+      });
       const base64Svg = Buffer.from(processedSvg, "utf-8").toString("base64");
       const dataUri = vscode.Uri.parse(
         `data:image/svg+xml;base64,${base64Svg}`,
@@ -66,7 +70,7 @@ export class SvgDecorator {
 
         try {
           const stats = fs.statSync(absolutePath);
-          fileSizeStr = this._formatBytes(stats.size);
+          fileSizeStr = FileUtils.formatBytes(stats.size);
         } catch (e) {
           // Ignore if path resolved but file unreadable
         }
@@ -76,11 +80,17 @@ export class SvgDecorator {
 
         if (absolutePath.toLowerCase().endsWith(".svg")) {
           const rawSvg = fs.readFileSync(absolutePath, "utf8");
-          const processedSvg = this._processSvg(rawSvg);
+          const processedSvg = SvgProcessor.process(rawSvg, {
+            width: 16,
+            height: 16,
+            colorReplacement: ThemeUtils.getSvgColor(),
+          });
           imgBase64 = Buffer.from(processedSvg, "utf-8").toString("base64");
           mime = "image/svg+xml";
           if (!fileSizeStr) {
-            fileSizeStr = this._formatBytes(Buffer.byteLength(rawSvg, "utf8"));
+            fileSizeStr = FileUtils.formatBytes(
+              Buffer.byteLength(rawSvg, "utf8"),
+            );
           }
         } else {
           imgBase64 = fs.readFileSync(absolutePath).toString("base64");
@@ -136,33 +146,5 @@ export class SvgDecorator {
 
   public dispose() {
     this._decorationType.dispose();
-  }
-
-  private _processSvg(svg: string): string {
-    let processed = svg
-      .replace(/className=/g, "class=")
-      .replace(/strokeWidth=/g, "stroke-width=")
-      .replace(/strokeLinecap=/g, "stroke-linecap=")
-      .replace(/strokeLinejoin=/g, "stroke-linejoin=")
-      .replace(/fillRule=/g, "fill-rule=")
-      .replace(/clipRule=/g, "clip-rule=")
-      // Handle framework specific syntax (React, Kotlin, Dart)
-      .replace(/={([\s\S]*?)}/g, '="$1"')
-      .replace(/\{[\s\S]*?\}/g, "")
-      .replace(/\$[a-zA-Z0-9_]+/g, "")
-      .replace(/\$\{[\s\S]*?\}/g, "")
-      .replace(/currentColor/gi, "#888888");
-
-    if (!processed.toLowerCase().includes("xmlns=")) {
-      processed = processed.replace(
-        /<svg/i,
-        '<svg xmlns="http://www.w3.org/2000/svg"',
-      );
-    }
-
-    processed = processed.replace(/\s(width|height)=".*?"/gi, "");
-    processed = processed.replace(/<svg/i, '<svg width="16" height="16"');
-
-    return processed;
   }
 }

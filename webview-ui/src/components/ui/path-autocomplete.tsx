@@ -47,12 +47,11 @@ export function PathAutocomplete({
   }, [value]);
 
   const groupedOptions = React.useMemo(() => {
-    if (!inputValue || inputValue.trim() === "")
-      return { extensions: [], folders: [], files: [] };
-    const search = inputValue.toLowerCase();
+    const search = inputValue.toLowerCase().trim();
     const filtered = options.filter(
       (opt) =>
-        opt.toLowerCase().includes(search) && !selectedItems.includes(opt),
+        (!search || opt.toLowerCase().includes(search)) &&
+        !selectedItems.includes(opt),
     );
 
     const extensions: string[] = [];
@@ -163,6 +162,7 @@ export function PathAutocomplete({
                 setInputValue(e.target.value);
                 if (e.target.value && !open) setOpen(true);
               }}
+              onFocus={() => setOpen(true)}
               onKeyDown={handleKeyDown}
               className="flex-1 bg-transparent border-none outline-none min-w-[60px] placeholder:text-muted-foreground/30 px-1"
             />
@@ -190,9 +190,7 @@ export function PathAutocomplete({
                       onSelect={() => handleSelect(opt)}
                       className="text-[10px] py-1.5 px-2 cursor-pointer hover:bg-primary/10 transition-colors"
                     >
-                      <span className="font-mono text-primary mr-2 uppercase">
-                        {opt}
-                      </span>
+                      <span className="font-mono text-primary mr-2">{opt}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>

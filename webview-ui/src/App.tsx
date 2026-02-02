@@ -1,5 +1,6 @@
 import { ImageGrid } from "./components/ImageGrid";
 import { CategorySelector } from "./components/CategorySelector";
+import { Toast } from "./components/ui/Toast";
 import { Github } from "lucide-react";
 
 function App() {
@@ -11,6 +12,8 @@ function App() {
       <div className="flex-1 overflow-hidden flex flex-col">
         <ImageGrid />
       </div>
+
+      <Toast />
 
       {/* Credit Section */}
       <div className="absolute bottom-0 right-6 z-50">

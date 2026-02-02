@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import { PathResolver } from "./utilities/PathResolver.js";
+import { SvgProcessor } from "./utilities/SvgProcessor.js";
+import { FileUtils } from "./utilities/FileUtils.js";
+import { ThemeUtils } from "./utilities/ThemeUtils.js";
+import { IMAGE_PATH_REGEX, SVG_TAG_REGEX } from "./utilities/RegexPatterns.js";
 import * as fs from "fs";
-
-const IMAGE_PATH_REGEX =
-  /(['"`])((?:[a-zA-Z]:)?[^'"\n\r]*?\.(?:png|jpg|jpeg|gif|svg|webp))\1/gi;
-const SVG_TAG_REGEX = /<svg[\s\S]*?<\/svg>/gi;
 
 export class SvgHoverProvider implements vscode.HoverProvider {
   public async provideHover(
@@ -12,6 +12,11 @@ export class SvgHoverProvider implements vscode.HoverProvider {
     position: vscode.Position,
     _token: vscode.CancellationToken,
   ): Promise<vscode.Hover | undefined> {
+    // Disable hover for .xaml files (XAML Path conversion is complex)
+    if (document.fileName.toLowerCase().endsWith(".xaml")) {
+      return undefined;
+    }
+
     const text = document.getText();
     const offset = document.offsetAt(position);
 
@@ -23,10 +28,18 @@ export class SvgHoverProvider implements vscode.HoverProvider {
 
       if (offset >= start && offset <= end) {
         const rawSvg = match[0];
-        const processedSvg = this._processSvg(rawSvg);
+        const processedSvg = SvgProcessor.process(rawSvg, {
+          width: 100,
+          height: 100,
+          colorReplacement: ThemeUtils.getSvgColor(),
+        });
         const base64Svg = Buffer.from(processedSvg).toString("base64");
         const dataUri = `data:image/svg+xml;base64,${base64Svg}`;
-        const fileSize = this._formatBytes(Buffer.byteLength(rawSvg, "utf8"));
+        const fileSize = FileUtils.formatBytes(
+          Buffer.byteLength(rawSvg, "utf8"),
+          2,
+          true,
+        );
 
         const markdown = new vscode.MarkdownString();
         markdown.supportHtml = true;
@@ -76,7 +89,7 @@ export class SvgHoverProvider implements vscode.HoverProvider {
         if (absolutePath) {
           const fileUri = vscode.Uri.file(absolutePath);
           const stats = fs.statSync(absolutePath);
-          const fileSize = this._formatBytes(stats.size);
+          const fileSize = FileUtils.formatBytes(stats.size, 2, true);
 
           const markdown = new vscode.MarkdownString();
           markdown.supportHtml = true;
@@ -119,42 +132,5 @@ export class SvgHoverProvider implements vscode.HoverProvider {
     }
 
     return undefined;
-  }
-
-  private _formatBytes(bytes: number, decimals = 2) {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  }
-
-  private _processSvg(svg: string): string {
-    let processed = svg
-      .replace(/className=/g, "class=")
-      .replace(/strokeWidth=/g, "stroke-width=")
-      .replace(/strokeLinecap=/g, "stroke-linecap=")
-      .replace(/strokeLinejoin=/g, "stroke-linejoin=")
-      .replace(/fillRule=/g, "fill-rule=")
-      .replace(/clipRule=/g, "clip-rule=")
-      // Handle framework specific syntax (React, Kotlin, Dart)
-      .replace(/={([\s\S]*?)}/g, '="$1"')
-      .replace(/\{[\s\S]*?\}/g, "")
-      .replace(/\$[a-zA-Z0-9_]+/g, "")
-      .replace(/\$\{[\s\S]*?\}/g, "")
-      .replace(/currentColor/gi, "#888888");
-
-    if (!processed.includes("http://www.w3.org/2000/svg")) {
-      processed = processed.replace(
-        /<svg/,
-        '<svg xmlns="http://www.w3.org/2000/svg"',
-      );
-    }
-
-    processed = processed.replace(/\s(width|height)=".*?"/g, "");
-    processed = processed.replace(/<svg/, '<svg width="100" height="100"');
-
-    return processed;
   }
 }

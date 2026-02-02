@@ -48,10 +48,21 @@ interface AssetState {
   setOnlyInline: (only: boolean) => void;
   copyPath: (path: string) => void;
   copyCode: (code: string) => void;
+  copyToJsx: (code: string) => void;
+  copyToReactComponent: (code: string, name: string) => void;
+  copyToVueComponent: (code: string, name: string) => void;
+  copyToAndroidVector: (code: string) => void;
+  copyToXamlPath: (code: string) => void;
+  copyToBase64: (code: string) => void;
+  copyToDataUri: (code: string) => void;
   setImages: (images: ImageData[]) => void;
   setLoading: (loading: boolean) => void;
   scanImages: () => void;
   openInEditor: (image: ImageData) => void;
+  brokenImages: Set<string>;
+  markAsBroken: (path: string) => void;
+  toast: { message: string; visible: boolean } | null;
+  showToast: (message: string) => void;
 }
 
 // Global vscode API access
@@ -77,6 +88,15 @@ export const useAssetStore = create<AssetState>((set: any, get: any) => ({
   onlyInline: false,
   includePattern: "",
   excludePattern: "",
+  brokenImages: new Set(),
+  toast: null,
+
+  markAsBroken: (path: string) => {
+    const next = new Set(get().brokenImages);
+    next.add(path);
+    set({ brokenImages: next });
+    get().applyFilters();
+  },
 
   setSearchQuery: (query: string) => {
     set({ searchQuery: query });
@@ -255,13 +275,79 @@ export const useAssetStore = create<AssetState>((set: any, get: any) => ({
   copyPath: (path: string) => {
     if (vscode) {
       vscode.postMessage({ type: "copyPath", value: path });
+      get().showToast("Path copied to clipboard!");
     }
   },
 
   copyCode: (code: string) => {
     if (vscode) {
       vscode.postMessage({ type: "copyCode", value: code });
+      get().showToast("SVG Code copied to clipboard!");
     }
+  },
+
+  copyToJsx: (code: string) => {
+    if (vscode) {
+      vscode.postMessage({ type: "copyToJsx", value: code });
+      get().showToast("JSX code copied!");
+    }
+  },
+
+  copyToReactComponent: (code: string, name: string) => {
+    if (vscode) {
+      vscode.postMessage({
+        type: "copyToReactComponent",
+        value: code,
+        name: name,
+      });
+      get().showToast("React Component copied!");
+    }
+  },
+
+  copyToVueComponent: (code: string, name: string) => {
+    if (vscode) {
+      vscode.postMessage({
+        type: "copyToVueComponent",
+        value: code,
+        name: name,
+      });
+      get().showToast("Vue Component copied!");
+    }
+  },
+
+  copyToAndroidVector: (code: string) => {
+    if (vscode) {
+      vscode.postMessage({ type: "copyToAndroidVector", value: code });
+      get().showToast("Android Vector XML copied!");
+    }
+  },
+
+  copyToXamlPath: (code: string) => {
+    if (vscode) {
+      vscode.postMessage({ type: "copyToXamlPath", value: code });
+      get().showToast("XAML Path copied!");
+    }
+  },
+
+  copyToBase64: (code: string) => {
+    if (vscode) {
+      vscode.postMessage({ type: "copyToBase64", value: code });
+      get().showToast("Base64 string copied!");
+    }
+  },
+
+  copyToDataUri: (code: string) => {
+    if (vscode) {
+      vscode.postMessage({ type: "copyToDataUri", value: code });
+      get().showToast("Data URI copied!");
+    }
+  },
+
+  showToast: (message: string) => {
+    set({ toast: { message, visible: true } });
+    setTimeout(() => {
+      set({ toast: null });
+    }, 3000);
   },
 
   setSortOrder: (order: string) => {
@@ -278,9 +364,17 @@ export const useAssetStore = create<AssetState>((set: any, get: any) => ({
       activeSourceFile,
       sortOrder,
       onlyInline,
+      brokenImages,
     } = get();
 
     let filtered = [...images];
+
+    // Filter out broken images
+    if (brokenImages.size > 0) {
+      filtered = filtered.filter(
+        (img: ImageData) => !brokenImages.has(img.path),
+      );
+    }
 
     // Filter by type (Only Inline)
     if (onlyInline) {
@@ -300,9 +394,15 @@ export const useAssetStore = create<AssetState>((set: any, get: any) => ({
     // Filter by folder - Multi select support
     if (activeFolder.length > 0) {
       filtered = filtered.filter((img) => {
-        const parts = img.path.split("/");
-        const folder = parts[parts.length - 2] || "root";
-        return activeFolder.includes(folder);
+        const relPath = img.relativePath || img.path;
+        const normalizedPath = relPath.replace(/\\/g, "/").replace(/^\/+/, "");
+
+        return activeFolder.some((folder: string) => {
+          const normalizedFolder = folder
+            .replace(/\\/g, "/")
+            .replace(/^\/+/, "");
+          return normalizedPath.startsWith(normalizedFolder + "/");
+        });
       });
     }
 

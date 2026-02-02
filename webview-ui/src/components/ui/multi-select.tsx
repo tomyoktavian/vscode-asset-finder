@@ -96,7 +96,7 @@ export function MultiSelect({
                 {selected.length > 2 && (
                   <Badge
                     variant="secondary"
-                    className="h-5 px-1.5 font-black text-[9px] uppercase bg-muted/60 text-muted-foreground border-border/20"
+                    className="h-5 px-1.5 font-black text-[9px] bg-muted/60 text-muted-foreground border-border/20"
                   >
                     +{selected.length - 2}
                   </Badge>

@@ -1,6 +1,9 @@
 import * as vscode from "vscode";
 import { getUri } from "./utilities/getUri.js";
 import { getNonce } from "./utilities/getNonce.js";
+import { GlobPatterns } from "./utilities/GlobPatterns.js";
+import { SvgProcessor } from "./utilities/SvgProcessor.js";
+import { SVG_TAG_REGEX } from "./utilities/RegexPatterns.js";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -92,10 +95,63 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         }
         case "copyCode": {
           await vscode.env.clipboard.writeText(data.value);
-          vscode.window.showInformationMessage(
-            "SVG Code copied to clipboard!",
-            { modal: true, detail: data.value },
+          vscode.window.showInformationMessage("SVG Code copied to clipboard!");
+          break;
+        }
+        case "copyToJsx": {
+          const jsx = SvgProcessor.toJsx(data.value);
+          await vscode.env.clipboard.writeText(jsx);
+          vscode.window.showInformationMessage("JSX code copied to clipboard!");
+          break;
+        }
+        case "copyToReactComponent": {
+          const component = SvgProcessor.toReactComponent(
+            data.value,
+            data.name || "Icon",
           );
+          await vscode.env.clipboard.writeText(component);
+          vscode.window.showInformationMessage(
+            "React Component copied to clipboard!",
+          );
+          break;
+        }
+        case "copyToVueComponent": {
+          const component = SvgProcessor.toVueComponent(
+            data.value,
+            data.name || "Icon",
+          );
+          await vscode.env.clipboard.writeText(component);
+          vscode.window.showInformationMessage(
+            "Vue Component copied to clipboard!",
+          );
+          break;
+        }
+        case "copyToAndroidVector": {
+          const xml = SvgProcessor.toAndroidVector(data.value);
+          await vscode.env.clipboard.writeText(xml);
+          vscode.window.showInformationMessage(
+            "Android Vector XML copied to clipboard!",
+          );
+          break;
+        }
+        case "copyToXamlPath": {
+          const xaml = SvgProcessor.toXamlPath(data.value);
+          await vscode.env.clipboard.writeText(xaml);
+          vscode.window.showInformationMessage(
+            "XAML Path copied to clipboard!",
+          );
+          break;
+        }
+        case "copyToBase64": {
+          const b64 = SvgProcessor.toBase64(data.value);
+          await vscode.env.clipboard.writeText(b64);
+          vscode.window.showInformationMessage("Base64 string copied!");
+          break;
+        }
+        case "copyToDataUri": {
+          const uri = SvgProcessor.toDataUri(data.value);
+          await vscode.env.clipboard.writeText(uri);
+          vscode.window.showInformationMessage("Data URI copied!");
           break;
         }
       }
@@ -109,24 +165,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   private async _scanWorkspaceImages(include?: string, exclude?: string) {
     const defaultInclude =
       "**/*.{png,jpg,jpeg,gif,svg,webp,mp3,wav,ogg,m4a,mp4,webm,pdf,xlsx,xls,csv,docx,doc,zip}";
-    const defaultExclude = "**/node_modules/**";
 
-    const includeQuery = this._formatGlob(include, defaultInclude);
-
-    const userExcludeArr = exclude
-      ? exclude
-          .split(",")
-          .map((p) => p.trim())
-          .filter((p) => p !== "")
-      : [];
-    const formattedUserExcludes = userExcludeArr
-      .map((p) => this._formatSingleGlob(p))
-      .filter((p) => p !== "");
-
-    let excludeQuery = defaultExclude;
-    if (formattedUserExcludes.length > 0) {
-      excludeQuery = `{${defaultExclude},${formattedUserExcludes.join(",")}}`;
-    }
+    const includeQuery = GlobPatterns.formatGlob(include, defaultInclude);
+    const excludeQuery = GlobPatterns.buildExcludeQuery(exclude);
 
     const images = await vscode.workspace.findFiles(includeQuery, excludeQuery);
 
@@ -163,6 +204,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         try {
           const stats = await vscode.workspace.fs.stat(uri);
+          let content: string | undefined;
+
+          if (ext === "svg") {
+            try {
+              const buffer = await vscode.workspace.fs.readFile(uri);
+              content = buffer.toString();
+            } catch (e) {
+              console.error(`Failed to read SVG content: ${uri.fsPath}`);
+            }
+          }
+
           return {
             type: "file" as const,
             uri: this._view?.webview.asWebviewUri(uri).toString(),
@@ -170,6 +222,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             relativePath: relativePath,
             name: uri.path.split("/").pop() || "",
             size: stats.size,
+            content,
           };
         } catch (e) {
           return {
@@ -188,30 +241,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
   private async _scanInlineSVGs(include?: string, exclude?: string) {
     const defaultInclude =
-      "**/*.{html,jsx,tsx,vue,svelte,php,dart,blade.php,kt,py,xml,txt,rb,go,rs,java,swift,cpp,h,cs,m,mm}";
-    const defaultExclude = "**/node_modules/**";
+      "**/*.{html,jsx,tsx,vue,svelte,php,dart,blade.php,kt,py,xml,xaml,txt,rb,go,rs,java,swift,cpp,h,cs,m,mm}";
 
-    const includeQuery = this._formatGlob(include, defaultInclude);
-
-    const userExcludeArr = exclude
-      ? exclude
-          .split(",")
-          .map((p) => p.trim())
-          .filter((p) => p !== "")
-      : [];
-    const formattedUserExcludes = userExcludeArr
-      .map((p) => this._formatSingleGlob(p))
-      .filter((p) => p !== "");
-
-    let excludeQuery = defaultExclude;
-    if (formattedUserExcludes.length > 0) {
-      excludeQuery = `{${defaultExclude},${formattedUserExcludes.join(",")}}`;
-    }
+    const includeQuery = GlobPatterns.formatGlob(include, defaultInclude);
+    const excludeQuery = GlobPatterns.buildExcludeQuery(exclude);
 
     const files = await vscode.workspace.findFiles(includeQuery, excludeQuery);
     const results: any[] = [];
-
-    const svgRegex = /<svg[\s\S]*?<\/svg>/g;
 
     for (const file of files) {
       try {
@@ -219,7 +255,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         let match;
         const relativePath = this._getRelativePath(file);
 
-        while ((match = svgRegex.exec(content)) !== null) {
+        SVG_TAG_REGEX.lastIndex = 0;
+        while ((match = SVG_TAG_REGEX.exec(content)) !== null) {
           const start = match.index;
           const end = match.index + match[0].length;
 
@@ -233,10 +270,11 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
           results.push({
             type: "inline",
-            content: this._cleanSvg(match[0]),
+            content: SvgProcessor.clean(match[0]),
             path: file.fsPath,
             relativePath: relativePath,
             name: `${file.path.split("/").pop()} (L:${line + 1})`,
+            size: Buffer.from(match[0]).length,
             line,
             character,
             lineEnd,
@@ -248,26 +286,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       }
     }
     return results;
-  }
-
-  private _cleanSvg(svg: string): string {
-    return (
-      svg
-        .replace(/className=/g, "class=")
-        .replace(/strokeWidth=/g, "stroke-width=")
-        .replace(/strokeLinecap=/g, "stroke-linecap=")
-        .replace(/strokeLinejoin=/g, "stroke-linejoin=")
-        .replace(/fillRule=/g, "fill-rule=")
-        .replace(/clipRule=/g, "clip-rule=")
-        // Handle React/JSX props and expressions
-        .replace(/={([\s\S]*?)}/g, '="$1"')
-        .replace(/\{[\s\S]*?\}/g, "")
-        // Handle Kotlin/Dart variables ($var, ${var})
-        .replace(/\$[a-zA-Z0-9_]+/g, "")
-        .replace(/\$\{[\s\S]*?\}/g, "")
-        .replace(/\s(width|height)=".*?"/g, "")
-        .replace(/currentColor/g, "var(--foreground)")
-    );
   }
 
   private _getRelativePath(uri: vscode.Uri): string {
@@ -289,40 +307,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       }
     }
     return relativePath;
-  }
-
-  private _formatGlob(
-    pattern: string | undefined,
-    defaultGlob: string,
-  ): string {
-    if (!pattern || pattern.trim() === "") return defaultGlob;
-
-    const parts = pattern
-      .split(",")
-      .map((p) => p.trim())
-      .filter((p) => p !== "");
-    if (parts.length === 0) return defaultGlob;
-    if (parts.length === 1) return this._formatSingleGlob(parts[0]);
-
-    return `{${parts.map((p) => this._formatSingleGlob(p)).join(",")}}`;
-  }
-
-  private _formatSingleGlob(pattern: string): string {
-    if (!pattern || pattern.trim() === "") return "";
-
-    if (pattern.startsWith("*.")) {
-      return `**/${pattern}`;
-    }
-
-    if (pattern.includes("**") || pattern.includes("?")) return pattern;
-
-    let clean = pattern.trim().replace(/^\/|\/$/g, "");
-
-    if (clean.includes(".") && !clean.startsWith(".")) {
-      return `**/${clean}`;
-    }
-
-    return `**/${clean}/**`;
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
