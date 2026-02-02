@@ -1,24 +1,24 @@
 # Changelog
 
-All notable changes to the **Asset Finder** extension will be documented in this file.
+All notable updates to the **Asset Finder** extension will be documented in this file.
 
 ## [0.0.1] - 2026-02-01
 
 ### Added
 
-- Project initialization for Asset Finder (formerly Gallery Project).
-- **Smart Hover Preview**: Instant image preview when hovering over file paths or SVG code with a two-column layout.
-- **Image Decorator**: Indicator icons in the editor gutter for lines containing image assets.
-- **Smart Redirect**: Clicking the Activity Bar icon directly opens the bottom gallery panel.
-- **Multifaceted Filter**: Filter assets by format, folder, and source file.
-- **Multi-Asset Support**: Supports displaying Audio, Video, PDF, Excel (XLSX, XLS, CSV), Word (DOCX, DOC), and Archive (ZIP, RAR) files.
-- **Integrated Audio Player**: Allows playing audio files directly from the gallery with a visual indicator.
-- **Visual Grid**: Gallery view with adjustable grid sizes.
-- Inline SVG detection for various programming languages (Kotlin, Python, Dart, React, etc.).
-- Real-time asset search feature.
-- Commands `asset-finder.focus` and `asset-finder.refresh`.
+- Initial project release (formerly known as Gallery Project).
+- **Smart Hover Preview**: Seamless image previews for file paths and SVG snippets with a refined two-column layout.
+- **Gutter Decorators**: Visual indicators in the editor margin for lines containing assets.
+- **Smart Panel Activation**: Single-click access from the Activity Bar directly to the Asset Gallery panel.
+- **Advanced Filtering**: Multifaceted filtering by asset format, directory, or source file.
+- **Unified Asset Support**: Native support for Audio, Video, PDF, Excel (XLSX, XLS, CSV), Word (DOCX, DOC), and Archive (ZIP, RAR) formats.
+- **Integrated Audio Player**: Play audio assets directly within the gallery with visual playback indicators.
+- **Customizable Grid**: Flexible gallery layout with adjustable grid scaling.
+- Deep inline SVG scanning for various languages (Kotlin, Python, Dart, React, etc.).
+- Robust real-time asset search functionality.
+- Core commands: `asset-finder.focus` and `asset-finder.refresh`.
 
 ### Changed
 
-- Updated UI color scheme.
-- Optimized performance for asset scanning in the workspace.
+- Reimagined UI color scheme for better clarity.
+- Optimized workspace asset scanning for enhanced performance.
