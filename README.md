@@ -1,14 +1,16 @@
-# Asset Finder 🎨
-
 [![Version](https://img.shields.io/open-vsx/v/tomyoktavian/asset-finder)](https://open-vsx.org/extension/tomyoktavian/asset-finder)
 [![Downloads](https://img.shields.io/open-vsx/dt/tomyoktavian/asset-finder?color=success)](https://open-vsx.org/extension/tomyoktavian/asset-finder)
 [![GitHub stars](https://img.shields.io/github/stars/tomyoktavian/vscode-asset-finder?style=flat&color=gold)](https://github.com/tomyoktavian/vscode-asset-finder)
 [![GitHub issues](https://img.shields.io/github/issues/tomyoktavian/vscode-asset-finder)](https://github.com/tomyoktavian/vscode-asset-finder/issues)
 [![License](https://img.shields.io/github/license/tomyoktavian/vscode-asset-finder)](https://github.com/tomyoktavian/vscode-asset-finder)
 
+# Asset Finder
+
 Asset Finder is a powerful VS Code extension designed to visually manage and explore project assets—including images, audio, video, and documents—directly within your workspace. It intelligently scans both local files and SVG code snippets embedded within your source code.
 
 ![Asset Finder Preview](https://github.com/tomyoktavian/vscode-asset-finder/raw/master/webview-ui/src/assets/preview.gif)
+
+![Demo Open Folder](https://github.com/tomyoktavian/vscode-asset-finder/blob/master/webview-ui/src/assets/open-folder.gif?raw=true)
 
 ## Features
 
@@ -19,10 +21,11 @@ Asset Finder is a powerful VS Code extension designed to visually manage and exp
 - **Smart Hover & Gutter**: Instant previews and visual icons in the editor gutter for every line containing an asset reference or SVG code.
 - **High-Performance Scanning**: Built-in smart exclusions for build folders (`dist`, `node_modules`, `target`, etc.) ensure lightning-fast asset indexing.
 - **Audio & Video Playback**: Integrated media players to preview sounds and videos directly within the gallery sidebar.
+- **Explorer Integration**: Right-click on any folder in the Explorer and select **"Open as Asset Finder"** to instantly filter and view assets within that directory.
 
 ## How to Use
 
-1. Click the **Asset Finder** icon in the **Activity Bar**.
+1. Click the **Asset Finder** icon in the **Activity Bar**, or **right-click a folder** in the Explorer and select **"Open as Asset Finder"**.
 2. The gallery will automatically open in the **Panel** area or **Primary Sidebar**.
 3. Use the **Toolbar** to adjust grid scaling, filter by folder, or search for specific assets.
 4. Use **Scan Configuration** to include or exclude specific workspace paths.

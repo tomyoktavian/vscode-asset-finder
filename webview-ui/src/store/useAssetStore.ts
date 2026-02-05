@@ -492,5 +492,8 @@ window.addEventListener("message", (event) => {
     case "imageResults":
       useAssetStore.getState().setImages(message.value);
       break;
+    case "selectFolder":
+      useAssetStore.getState().setFolder([message.value]);
+      break;
   }
 });

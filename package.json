@@ -24,7 +24,7 @@
     "inline-svg",
     "vscode-extension"
   ],
-  "version": "0.1.2",
+  "version": "0.1.3",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -83,8 +83,21 @@
       {
         "command": "asset-finder.focus",
         "title": "Open Asset Finder"
+      },
+      {
+        "command": "asset-finder.openFolder",
+        "title": "Open as Asset Finder"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "asset-finder.openFolder",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

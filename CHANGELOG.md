@@ -2,6 +2,14 @@
 
 All notable updates to the **Asset Finder** extension will be documented in this file.
 
+## [0.1.3] - 2026-02-05
+
+### Added
+
+- **Folder Context Menu Integration**: Added "Open as Asset Finder" to the explorer context menu (right-click on any folder).
+- **Auto-Filtering by Directory**: Selecting "Open as Asset Finder" on a folder now automatically focuses the gallery and pre-selects that directory in the "All folders" filter panel.
+- **Smart View Activation**: Automatically switches focus to the Asset Finder panel when triggered from the context menu.
+
 ## [0.1.2] - 2026-02-03
 
 ### Major Update

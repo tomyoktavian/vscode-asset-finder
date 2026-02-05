@@ -75,6 +75,17 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
   context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "asset-finder.openFolder",
+      (uri: vscode.Uri) => {
+        vscode.commands.executeCommand("asset-finder.focus");
+        if (uri) {
+          sidebarProvider.selectFolder(uri);
+        }
+      },
+    ),
+  );
+  context.subscriptions.push(
     vscode.languages.registerHoverProvider(
       { scheme: "file", language: "*" },
       new SvgHoverProvider(),

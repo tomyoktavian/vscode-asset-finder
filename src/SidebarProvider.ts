@@ -8,6 +8,7 @@ import { SVG_TAG_REGEX } from "./utilities/RegexPatterns.js";
 export class SidebarProvider implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
   _doc?: vscode.TextDocument;
+  private _pendingFolder: string | null = null;
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
@@ -17,8 +18,32 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  public selectFolder(uri: vscode.Uri) {
+    const relativePath = this._getRelativePath(uri);
+    if (this._view) {
+      this._view.webview.postMessage({
+        type: "selectFolder",
+        value: relativePath,
+      });
+    } else {
+      this._pendingFolder = relativePath;
+    }
+  }
+
   public resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView;
+
+    if (this._pendingFolder) {
+      const folder = this._pendingFolder;
+      this._pendingFolder = null;
+      // Small delay to ensure webview listener is attached
+      setTimeout(() => {
+        webviewView.webview.postMessage({
+          type: "selectFolder",
+          value: folder,
+        });
+      }, 500);
+    }
 
     webviewView.webview.options = {
       enableScripts: true,
